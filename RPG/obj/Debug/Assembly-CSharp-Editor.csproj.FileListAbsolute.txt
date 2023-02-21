@@ -1,0 +1,2 @@
+D:\Unity\Games\RPG_Prototype\RPG\obj\Debug\Assembly-CSharp-Editor.csproj.AssemblyReference.cache
+D:\Unity\Games\RPG_Prototype\RPG\obj\Debug\Assembly-CSharp-Editor.csproj.CoreCompileInputs.cache
