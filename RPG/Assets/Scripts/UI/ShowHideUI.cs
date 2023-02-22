@@ -6,27 +6,16 @@ namespace InventoryExample.UI
 {
     public class ShowHideUI : MonoBehaviour
     {
-        [SerializeField] KeyCode toggleKey = KeyCode.Escape;
         [SerializeField] GameObject uiContainer = null;
 
-        // Start is called before the first frame update
         void Start()
         {
             uiContainer.SetActive(false);
         }
 
-        // Update is called once per frame
-        void Update()
+        public void ToggleUI(bool toggle)
         {
-            if (Input.GetKeyDown(toggleKey))
-            {
-                uiContainer.SetActive(!uiContainer.activeSelf);
-            }
-        }
-
-        public void ToggleUI()
-        {
-            uiContainer.SetActive(!uiContainer.activeSelf);
+            uiContainer.SetActive(toggle);
         }
     }
 }

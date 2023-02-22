@@ -18,6 +18,7 @@ namespace RPG.Combat
         [SerializeField] Transform rightHandTransform= null;
         [SerializeField] Transform leftHandTransform = null;
         [SerializeField] WeaponConfig defaultWeapon = null;
+        [SerializeField] bool isPlayer = false;
 
         Health target;
         Equipment equipment;
@@ -61,11 +62,17 @@ namespace RPG.Combat
 
             if (target != null && !GetIsInRange(target.transform))
             {
-                GetComponent<Mover>().MoveTo(target.transform.position, 1f);
+                if(!isPlayer)
+                {
+                    GetComponent<Mover>().MoveTo(target.transform.position, 1f);
+                }
             }
             else
             {
-                GetComponent<Mover>().Cancel();
+                if (!isPlayer)
+                {
+                    GetComponent<Mover>().Cancel();
+                }
                 AttackBehaviour();
             }
         }
@@ -102,7 +109,10 @@ namespace RPG.Combat
 
         private void AttackBehaviour()
         {
-            transform.LookAt(target.transform);
+            if (!isPlayer)
+            {
+                transform.LookAt(target.transform);
+            }
             if(timeSinceLastAttack > timeBetweenAttacks)
             {
                 // Will trigger Hit() Event

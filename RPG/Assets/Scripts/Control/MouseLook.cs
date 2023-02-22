@@ -7,16 +7,16 @@ namespace RPG.Control
     public class MouseLook : MonoBehaviour
     {
         [SerializeField] float mouseSensitivity = 100f;
-        [SerializeField] Transform playerBody;
+        [SerializeField] Transform playerBody = null;
 
         float xRotation = 0f;
 
-        void Start ()
+        void Update()
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            Look();
         }
 
-        void Update()
+        private void Look()
         {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;

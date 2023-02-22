@@ -5,6 +5,8 @@ using RPG.Attributes;
 using System;
 using UnityEngine.EventSystems;
 using GameDevTV.Inventories;
+using UnityEngine.UI;
+using InventoryExample.UI;
 
 namespace RPG.Control
 {
@@ -12,12 +14,19 @@ namespace RPG.Control
     {
         Health health;
         CharacterController controller;
+        MouseLook mouseLook;
+        bool canMove = true;
+        bool inventoryIsOpened = false;
+
+        [SerializeField] GameObject crossHair = null;
+        [SerializeField] ShowHideUI inventoryUI;
 
         [System.Serializable]
         struct CursorMapping
         {
             public CursorType type;
             public Texture2D texture;
+            public Sprite image;
             public Vector2 hotspot;
         }
 
@@ -29,10 +38,18 @@ namespace RPG.Control
         {
             health = GetComponent<Health>();
             controller = GetComponent<CharacterController>();
+            mouseLook = GetComponentInChildren<MouseLook>();
+
+            Cursor.lockState = CursorLockMode.Locked;
         }
         private void Update()
         {
             CheckSpecialAbilityKeys();
+
+            if (ToggleInventory())
+            {
+                return;
+            }
 
             if (InteractWithUI())
             {
@@ -42,13 +59,45 @@ namespace RPG.Control
             {
                 return;
             }
-
             Movement();
-
             if (InteractWithComponent())
             {
                 return;
             }
+            SetCursor(CursorType.None);
+            SetCrosshair(CursorType.None);
+        }
+
+        private bool ToggleInventory()
+        {
+            if (Input.GetButtonDown("Inventory"))
+            {
+                if (!inventoryIsOpened)
+                {
+                    if (inventoryUI == null)
+                    {
+                        return false;
+                    }
+
+                    inventoryIsOpened = true;
+                    inventoryUI.ToggleUI(true);
+                    Cursor.lockState = CursorLockMode.None;
+                    return true;
+                }
+                else
+                {
+                    if (inventoryUI == null)
+                    {
+                        return false;
+                    }
+
+                    inventoryIsOpened = false;
+                    inventoryUI.ToggleUI(false);
+                    Cursor.lockState = CursorLockMode.Locked;
+                    return false;
+                }
+            } 
+            return false;
         }
 
         private void CheckSpecialAbilityKeys()
@@ -93,6 +142,8 @@ namespace RPG.Control
             if (EventSystem.current.IsPointerOverGameObject())
             {
                 SetCursor(CursorType.UI);
+                SetCrosshair(CursorType.UI);
+                mouseLook.enabled = false;
                 return true;
             }
             return false;
@@ -109,9 +160,14 @@ namespace RPG.Control
                     if (raycastable.HandleRaycast(this))
                     {
                         SetCursor(raycastable.GetCursorType());
+                        SetCrosshair(raycastable.GetCursorType());
                         return true;
                     }
                 }
+            }
+            if (canMove)
+            {
+                return true;
             }
             return false;
         }
@@ -133,6 +189,11 @@ namespace RPG.Control
 
         private void Movement()
         {
+            if(mouseLook.enabled == false)
+            {
+                mouseLook.enabled = true;
+            }
+
             float x = Input.GetAxis("Horizontal");
             float z = Input.GetAxis("Vertical");
 
@@ -145,6 +206,16 @@ namespace RPG.Control
         {
             CursorMapping mapping = GetCursorMapping(type);
             Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+        }
+
+        private void SetCrosshair(CursorType type)
+        {
+            CursorMapping mapping = GetCursorMapping(type);
+            if(crossHair != null)
+            {
+                Sprite crossHairSprite = crossHair.GetComponent<Sprite>();
+                crossHairSprite = mapping.image;
+            }
         }
 
         private CursorMapping GetCursorMapping(CursorType type)
